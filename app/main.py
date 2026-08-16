@@ -1,3 +1,6 @@
+
+from dotenv import load_dotenv
+load_dotenv()
 import time
 import logging
 
@@ -6,6 +9,7 @@ from fastapi import FastAPI
 from app.api.chat import router as chat_router
 from fastapi import Request
 from fastapi.responses import JSONResponse
+from app.routers.documents import router as documents_router
 
 from app.core.exceptions import AIPlatformException
 app = FastAPI()
@@ -53,3 +57,4 @@ async def log_requests(request, call_next):
     )
 
     return response
+app.include_router(documents_router)
