@@ -4,7 +4,7 @@ load_dotenv()
 import time
 import logging
 
-
+from app.routers.ask import router as ask_router
 from fastapi import FastAPI
 from app.api.chat import router as chat_router
 from fastapi import Request
@@ -58,3 +58,6 @@ async def log_requests(request, call_next):
 
     return response
 app.include_router(documents_router)
+
+
+app.include_router(ask_router)

@@ -4,7 +4,7 @@ from app.services.context_builder import build_context
 from app.services.prompt_builder import build_prompt
 from app.services.llm import stream_answer
 async def main():
-    results = await search_chunks("What robozonix did")
+    results = await search_chunks("Who was matangini hazra")
     for r in results:
         print(f"\n[Page {r['page_number']}] distance={r['distance']:.4f}")
         print(r['content'][:200])
@@ -15,7 +15,7 @@ async def main():
 
 
     # ... after context = build_context(results)
-    messages = build_prompt("What robozonix did", context)
+    messages = build_prompt("Who was matangini hazra", context)
     print("\n\n=== BUILT PROMPT ===\n")
     for m in messages:
         print(f"[{m['role'].upper()}]")
