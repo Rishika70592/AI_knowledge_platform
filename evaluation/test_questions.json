@@ -1,0 +1,62 @@
+[
+  {
+    "id": "q1",
+    "question": "What is Robozonix and what does it specialize in?",
+    "expected_answer_contains": ["embedded systems", "robotics", "Artificial Intelligence"],
+    "expected_page": null
+  },
+  {
+    "id": "q2",
+    "question": "Where is Robozonix located?",
+    "expected_answer_contains": ["Behala", "Kolkata"],
+    "expected_page": null
+  },
+  {
+    "id": "q3",
+    "question": "What is the Beat Sync Interactive DJ Lights project?",
+    "expected_answer_contains": ["sound-reactive", "Arduino", "sound sensor"],
+    "expected_page": null
+  },
+  {
+    "id": "q4",
+    "question": "What workshop was conducted at Techno India, Salt Lake?",
+    "expected_answer_contains": ["Beat Sync", "Techno India", "Salt Lake"],
+    "expected_page": null
+  },
+  {
+    "id": "q5",
+    "question": "What components were used in the Otto Robot project?",
+    "expected_answer_contains": ["Arduino Nano", "Servo", "Bluetooth", "Ultrasonic"],
+    "expected_page": null
+  },
+  {
+    "id": "q6",
+    "question": "How does the Automatic Plant Watering System work?",
+    "expected_answer_contains": ["Soil Moisture Sensor", "Relay", "watering"],
+    "expected_page": null
+  },
+  {
+    "id": "q7",
+    "question": "What AI tools were used during the internship?",
+    "expected_answer_contains": ["Claude", "Antigravity"],
+    "expected_page": null
+  },
+  {
+    "id": "q8",
+    "question": "Who supervised the internship and what is their designation?",
+    "expected_answer_contains": ["Krishna Daripa", "HOD"],
+    "expected_page": null
+  },
+  {
+    "id": "q9",
+    "question": "How many total hours were logged during the internship?",
+    "expected_answer_contains": ["88 hr", "Total Hours"],
+    "expected_page": null
+  },
+  {
+    "id": "q10",
+    "question": "What challenges were faced with sensor calibration?",
+    "expected_answer_contains": ["Sensor Calibration", "threshold", "ambient noise"],
+    "expected_page": null
+  }
+]
