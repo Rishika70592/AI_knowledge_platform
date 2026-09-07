@@ -1,13 +1,14 @@
 from app.services.extraction import extract_text_by_page
 from app.services.cleaning import clean_text
 from app.services.chunking import chunk_text
+from app.core.config import CHUNKING_STRATEGY
 from app.services.embeddings import embed_texts
 from app.models import Document, Chunk
 from app.db.db import AsyncSessionLocal
 
-async def ingest_document(filename: str, file_bytes: bytes):
+async def ingest_document(filename: str, file_bytes: bytes, user_id=None):
     async with AsyncSessionLocal() as session:
-        document = Document(filename=filename, status="processing")
+        document = Document(filename=filename, status="processing", user_id=user_id)
         session.add(document)
         await session.flush()
 
@@ -19,7 +20,7 @@ async def ingest_document(filename: str, file_bytes: bytes):
             cleaned = clean_text(page["text"])
             if not cleaned:
                 continue
-            for c in chunk_text(cleaned):
+            for c in chunk_text(cleaned, strategy=CHUNKING_STRATEGY):
                 all_chunks.append({"content": c, "page_number": page["page_number"]})
 
         embeddings = await embed_texts([c["content"] for c in all_chunks])
