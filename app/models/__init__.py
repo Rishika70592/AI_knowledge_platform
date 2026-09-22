@@ -1,1 +1,1 @@
-from .models import Base, Document, Chunk, User
+from .models import Base, Document, Chunk, User, ChatMessage

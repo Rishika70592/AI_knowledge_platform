@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 import time
 import logging
-
+from app.routers.chat_history import router as chat_history_router
 from app.routers.ask import router as ask_router
 from fastapi import FastAPI
 from app.api.chat import router as chat_router
@@ -64,3 +64,5 @@ app.include_router(documents_router)
 
 app.include_router(ask_router)
 app.include_router(auth_router)
+
+app.include_router(chat_history_router)
