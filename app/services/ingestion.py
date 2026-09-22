@@ -28,6 +28,7 @@ async def ingest_document(filename: str, file_bytes: bytes, user_id=None):
         for idx, (chunk_data, vector) in enumerate(zip(all_chunks, embeddings)):
             session.add(Chunk(
                 document_id=document.id,
+                user_id=user_id,   
                 content=chunk_data["content"],
                 chunk_index=idx,
                 page_number=chunk_data["page_number"],

@@ -16,7 +16,7 @@ class AskRequest(BaseModel):
 
 @router.post("/ask")
 async def ask(request: AskRequest, current_user: User = Depends(get_current_user)):
-    chunks = await search_chunks(request.question, top_k=request.top_k)
+    chunks = await search_chunks(request.question, top_k=request.top_k,user_id=str(current_user.id))
     context = build_context(chunks)
     messages = build_prompt(request.question, context)
 

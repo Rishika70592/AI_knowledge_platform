@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import Column, String, Text, Integer, DateTime, ForeignKey, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, declarative_base
@@ -20,6 +22,7 @@ class Document(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     chunks = relationship("Chunk", back_populates="document", cascade="all, delete-orphan")
+    
 
 
 class Chunk(Base):
@@ -32,13 +35,13 @@ class Chunk(Base):
     page_number = Column(Integer)
     embedding = Column(Vector(384))
     content_tsv = Column(TSVECTOR, Computed("to_tsvector('english', content)", persisted=True))
-
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     document = relationship("Document", back_populates="chunks")
 
 
 Index('chunks_content_tsv_idx', Chunk.content_tsv, postgresql_using='gin')
 
-
+Index('chunks_user_id_idx', Chunk.user_id)
 
 class User(Base):
     __tablename__ = "users"
@@ -48,3 +51,15 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class ChatMessage(Base):
+    """New — Step 5: chat history."""
+    __tablename__ = "chat_messages"
+ 
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
+    question = Column(Text, nullable=False)
+    answer = Column(Text, nullable=False)
+    source_document_ids = Column(Text, nullable=True)  # comma-separated uuids
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)   
+
