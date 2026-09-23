@@ -1,9 +1,11 @@
 from dotenv import load_dotenv
 import os
+from pathlib import Path
+#load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv()
-
-APP_NAME = os.getenv("Application Name", "AI Knowledge Platform")
+load_dotenv(BASE_DIR / ".env")
+APP_NAME = os.getenv("Application_Name", "AI Knowledge Platform")
 DATABASE_URL = os.getenv("DATABASE_URL")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 EMBEDDING_DIMENSIONS = int(os.getenv("EMBEDDING_DIMENSIONS", 384))
