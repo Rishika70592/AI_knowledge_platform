@@ -1,4 +1,3 @@
-
 from dotenv import load_dotenv
 load_dotenv()
 import time
@@ -13,6 +12,7 @@ from app.routers.documents import router as documents_router
 
 from app.core.exceptions import AIPlatformException
 from app.routers.auth import router as auth_router
+from app.api.agent import router as agents_router
 
 app = FastAPI()
 logger = logging.getLogger("api")
@@ -66,3 +66,4 @@ app.include_router(ask_router)
 app.include_router(auth_router)
 
 app.include_router(chat_history_router)
+app.include_router(agents_router)
