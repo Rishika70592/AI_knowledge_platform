@@ -1,10 +1,11 @@
 from typing import Any, Dict, List, Optional
+from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
 
 class ResearchTask(BaseModel):
-    id: str
+    id: str = Field(default_factory=lambda: str(uuid4()))
     question: str
     purpose: str
     status: str = "pending"
