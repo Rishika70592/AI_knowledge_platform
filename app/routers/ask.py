@@ -10,6 +10,8 @@ from app.services.hybrid_search import hybrid_search
 
 from app.models import User, ChatMessage
 from app.db.db import AsyncSessionLocal
+import time
+import logging
 
 router = APIRouter()
 
@@ -31,16 +33,23 @@ async def ask(request: AskRequest, current_user: User = Depends(get_current_user
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
     """
+
 @router.post("/ask")
 async def ask(
     request: AskRequest,
     current_user: User = Depends(get_current_user)
 ):
+    request_start = time.perf_counter()
+
+    retrieval_start = time.perf_counter()
+
     chunks = await hybrid_search(
         request.question,
         top_k=request.top_k,
         user_id=str(current_user.id)
     )
+
+    retrieval_time = time.perf_counter() - retrieval_start
 
     context = build_context(chunks)
     messages = build_prompt(request.question, context)
@@ -48,16 +57,29 @@ async def ask(
     async def event_generator():
         answer_parts = []
 
+        llm_start = time.perf_counter()
+
         async for token in stream_answer(messages):
             answer_parts.append(token)
             yield f"data: {token}\n\n"
 
+        llm_time = time.perf_counter() - llm_start
+
         answer = "".join(answer_parts)
+
+        total_time = time.perf_counter() - request_start
+
+        logging.info(
+            "ask completed | "
+            f"retrieval={retrieval_time:.3f}s | "
+            f"llm={llm_time:.3f}s | "
+            f"total={total_time:.3f}s"
+        )
 
         source_document_ids = ",".join(
             dict.fromkeys(
-             str(chunk["document_id"])
-             for chunk in chunks
+                str(chunk["document_id"])
+                for chunk in chunks
             )
         )
 
@@ -78,4 +100,5 @@ async def ask(
         event_generator(),
         media_type="text/event-stream"
     )
+
     
