@@ -13,8 +13,19 @@ from app.routers.documents import router as documents_router
 from app.core.exceptions import AIPlatformException
 from app.routers.auth import router as auth_router
 from app.api.agent import router as agents_router
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 logger = logging.getLogger("api")
 
 
