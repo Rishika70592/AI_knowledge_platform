@@ -3,10 +3,11 @@
 import { FormEvent, useState } from "react";
 import { apiRequest } from "../../lib/api";
 import { useRouter } from "next/navigation";
-import router from "next/router";
 import Link from "next/link";
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -35,13 +36,17 @@ export default function RegisterPage() {
 
       const data = await response.json();
 
+      if (!response.ok) {
+        throw new Error(
+          typeof data.detail === "string"
+            ? data.detail
+            : "Registration failed."
+        );
+      }
+
       console.log("Register response:", data);
 
-      setMessage("Registration successful! You can now log in.");
-
-      setTimeout(() => {
       router.push("/login");
-}, 1000);
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -116,6 +121,12 @@ export default function RegisterPage() {
             />
           </div>
 
+          {message && (
+            <p className="rounded-lg bg-gray-100 px-4 py-3 text-sm">
+              {message}
+            </p>
+          )}
+
           <button
             type="submit"
             disabled={loading}
@@ -127,15 +138,14 @@ export default function RegisterPage() {
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-600">
-  Already have an account?{" "}
-  <Link
-    href="/login"
-    className="font-medium text-black underline"
-  >
-    Sign in
-  </Link>
-</p>
-
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-black underline"
+          >
+            Sign in
+          </Link>
+        </p>
 
       </div>
     </main>

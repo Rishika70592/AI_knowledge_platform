@@ -3,7 +3,6 @@
 import { FormEvent, useState } from "react";
 import { apiRequest } from "../../lib/api";
 import { useRouter } from "next/navigation";
-import router from "next/router";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -11,6 +10,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,17 +30,34 @@ export default function LoginPage() {
 
       const data = await response.json();
 
-      // Temporarily save the JWT.
+      if (!response.ok) {
+        throw new Error(
+          data?.detail ||
+          data?.message ||
+          data?.error ||
+          "Login failed"
+        );
+      }
+
+      if (!data.access_token) {
+        throw new Error("Login succeeded but no access token was returned.");
+      }
+
+      // Save JWT
       localStorage.setItem("access_token", data.access_token);
 
       setMessage("Login successful!");
+
+      // Navigate to chat
       setTimeout(() => {
-  router.push("/chat");
-}, 1000);
-      console.log("Login response:", data);
+        router.push("/chat");
+      }, 500);
+
     } catch (error) {
       setMessage(
-        error instanceof Error ? error.message : "Login failed"
+        error instanceof Error
+          ? error.message
+          : "Login failed"
       );
     } finally {
       setLoading(false);
@@ -47,8 +65,9 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-2xl border p-8 shadow-lg">
+    <main className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
+      <div className="w-full max-w-md rounded-2xl border bg-white p-8 shadow-lg">
+
         <h1 className="mb-2 text-3xl font-bold">
           Welcome back
         </h1>
@@ -58,6 +77,7 @@ export default function LoginPage() {
         </p>
 
         <form onSubmit={handleLogin} className="space-y-5">
+
           <div>
             <label className="mb-2 block text-sm font-medium">
               Email
@@ -95,18 +115,32 @@ export default function LoginPage() {
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>
+
         </form>
 
-        
-<p className="mt-6 text-center text-sm text-gray-600">
-  Don't have an account?{" "}
-  <Link
-    href="/register"
-    className="font-medium text-black underline"
-  >
-    Create account
-  </Link>
-</p>
+        {message && (
+          <p
+            className={`mt-4 text-center text-sm ${
+              message.toLowerCase().includes("successful")
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {message}
+          </p>
+        )}
+
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don't have an account?{" "}
+
+          <Link
+            href="/register"
+            className="font-medium text-black underline"
+          >
+            Create account
+          </Link>
+        </p>
+
       </div>
     </main>
   );
