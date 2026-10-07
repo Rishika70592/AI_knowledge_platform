@@ -1,223 +1,150 @@
-# AI Knowledge Platform
+## AI Knowledge Platform :
 
-> A custom AI knowledge platform built from first principles,
-> featuring RAG, vector search, MCP, and multi-agent orchestration.
+An end-to-end AI knowledge platform built from first principles, combining RAG, hybrid retrieval, vector search, local LLM inference, multi-agent orchestration, and MCP.
+A production-oriented AI engineering project that allows users to upload documents, build searchable knowledge bases, ask source-grounded questions, and perform multi-step research using custom AI agents.
+The project focuses on understanding and implementing the internal components of modern AI systems rather than hiding them behind high-level frameworks such as LangChain or LangGraph.
 
-## Overview
-AI Knowledge Platform
+##Why This Project?
+This project was built to explore what happens inside an AI application, beyond simply calling an LLM API.
 
-An AI-powered knowledge platform built from first principles to explore and implement modern AI engineering concepts.
+It covers the complete pipeline:
 
-The platform allows users to upload documents, process and embed their content, perform semantic and hybrid retrieval, and ask questions using a custom Retrieval-Augmented Generation (RAG) pipeline.
+Document
+   ↓
+PDF Extraction
+   ↓
+Cleaning & Chunking
+   ↓
+Embeddings
+   ↓
+Vector Database
+   ↓
+Hybrid Retrieval
+   ↓
+Context Construction
+   ↓
+Local LLM
+   ↓
+Grounded Answer
+   ↓
+Citations
 
-Beyond RAG, the project explores LLM integration, vector search, multi-agent orchestration, Model Context Protocol (MCP), authentication, evaluation, and backend engineering without relying on high-level AI orchestration frameworks such as LangChain or LangGraph for the core pipeline.
+It also extends the RAG pipeline into a custom multi-agent research system:
 
-Overview
-What This Project Demonstrates
-
-Custom PDF document ingestion and text processing
-
-Configurable document chunking
-
-Embedding generation using Sentence Transformers
-
-PostgreSQL with pgvector for vector storage and similarity search
-
-Custom RAG pipeline built from scratch
-
-Hybrid retrieval and metadata filtering
-
-Context and prompt construction
-
-LLM integration with streaming responses
-
-Source-grounded answers and citations
-
-JWT-based authentication and multi-user support
-
-AI agent workflow with planning, research, writing, and review
-
-Model Context Protocol (MCP) integration
-
-Unit, integration, and API testing
-
-Next.js frontend integrated with a FastAPI backend
-
-## Architecture
-                         User
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │   Next.js    │
-                    │   Frontend   │
-                    └──────┬───────┘
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │   FastAPI    │
-                    │   Backend    │
-                    └──────┬───────┘
-                           │
-             ┌─────────────┼─────────────┐
-             │             │             │
-             ▼             ▼             ▼
-        Documents         RAG         AI Agents
-             │             │             │
-             ▼             ▼             ▼
-        PDF Extraction   Retrieval      MCP
-             │             │             │
-             ▼             ▼             ▼
-         Chunking     PostgreSQL       Tools
-             │          + pgvector
-             ▼             │
-       Embeddings          │
-             │             ▼
-             └──────►  Context
-                          │
-                          ▼
-                         LLM
-                          │
-                          ▼
-                    Final Answer
-
-Testing
-
-The project includes unit, integration, and API tests covering the core document processing, embedding, retrieval, RAG, LLM, and agent components.
-
-All tests executed during development passed successfully.
-
-
-## Key Features
-
-LM-powered chat with streaming responses
-
-PDF document ingestion with text extraction and preprocessing
-
-Configurable document chunking for efficient retrieval
-
-Semantic embeddings using Sentence Transformers
-
-PostgreSQL + pgvector for vector storage and similarity search
-
-Custom RAG pipeline built without LangChain or LangGraph
-
-Hybrid retrieval combining semantic and keyword-based search
-
-Top-k similarity search with document and user filtering
-
-Context-aware prompt construction for grounded answers
-
-Source/citation generation to connect answers with retrieved documents
-
-Multi-agent research workflow with:
-
-Planner Agent
-
-Researcher Agent
-
+User Question
+      ↓
+Planner
+      ↓
+Task Decomposition
+      ↓
+Researcher
+      ↓
 Retriever
-
+      ↓
 Writer
+      ↓
+Reviewer
+      ↓
+Reflection / Revision
+      ↓
+Final Answer
 
-Reviewer/Reflection
 
-MCP integration for connecting AI agents with external tools
+## Key Highlights:
 
-JWT authentication and user-specific document access
+-> Custom RAG pipeline built from scratch
 
-Database migrations using Alembic
+-> Hybrid retrieval using pgvector + PostgreSQL full-text search
 
-REST API built with FastAPI
+-> Retrieval evaluation with measurable Recall@5
 
-Unit, integration, and API testing with pytest
+-> Improved retrieval recall from 0.73 → 0.83
 
-Health-check endpoint for backend monitoring
+-> Reciprocal Rank Fusion (RRF) for result merging
 
-Environment-based configuration for local development and deployment
+-> Sentence Transformer embeddings
+
+-> PostgreSQL + pgvector vector search
+
+-> Local LLM inference using Ollama
+
+-> Streaming LLM responses
+
+-> Source and page-level citations
+
+-> Configurable chunking strategies
+
+-> Multi-agent research workflow
+
+-> Planner → Researcher → Writer → Reviewer → Reflection
+
+-> MCP integration for external tools
+
+-> JWT authentication and user-level authorization
+
+-> Unit, integration, and API testing
+
+-> FastAPI backend + Next.js frontend
+
+-> Evaluation-driven engineering rather than assumption-driven optimization
+
+## System Architecture
+                              USER
+                                │
+                                ▼
+                        ┌──────────────┐
+                        │   Next.js    │
+                        │   Frontend   │
+                        └──────┬───────┘
+                               │
+                               ▼
+                        ┌──────────────┐
+                        │   FastAPI    │
+                        │   Backend    │
+                        └──────┬───────┘
+                               │
+             ┌─────────────────┼─────────────────┐
+             │                 │                 │
+             ▼                 ▼                 ▼
+        Documents             RAG           AI Agents
+             │                 │                 │
+             ▼                 ▼                 ▼
+        PDF Extraction    Hybrid Search       Planner
+             │                 │                 │
+          Cleaning        pgvector + FTS      Researcher
+             │                 │                 │
+          Chunking             │               Writer
+             │                 │                 │
+        Embeddings             │              Reviewer
+             │                 │                 │
+             └────────────┐    │            Reflection
+                          │    │                 │
+                          ▼    ▼                 │
+                       PostgreSQL                │
+                       + pgvector               │
+                          │                     │
+                          └──────────┬──────────┘
+                                     ▼
+                              Context Builder
+                                     │
+                                     ▼
+                              Prompt Builder
+                                     │
+                                     ▼
+                               Ollama / LLM
+                                     │
+                                     ▼
+                          Streaming Grounded Answer
+                                     │
+                                     ▼
+                              Sources / Citations
 
 ## RAG Pipeline
+The core of the platform is a custom Retrieval-Augmented Generation pipeline.
 
+The implementation separates ingestion, retrieval, context construction, and generation into independently testable services.
 
-
-
-RAG Pipeline
-
-The platform implements a custom Retrieval-Augmented Generation (RAG) pipeline from the ground up. The retrieval, chunking, embedding, ranking, context construction, and prompt-building components are implemented as independent services rather than relying on high-level orchestration frameworks.
-
-The pipeline is divided into three major stages:
-
-Document Ingestion
-
-Information Retrieval
-
-Context Construction & Generation
-
-Complete RAG Architecture
-                           DOCUMENT INGESTION
-                                  │
-                                  ▼
-                           PDF Upload
-                                  │
-                                  ▼
-                          Text Extraction
-                                  │
-                                  ▼
-                       Cleaning & Normalization
-                                  │
-                                  ▼
-                         Document Chunking
-                                  │
-                                  ▼
-                       Embedding Generation
-                                  │
-                                  ▼
-                       PostgreSQL + pgvector
-                                  │
-                                  │
-                                  ▼
-                           USER QUESTION
-                                  │
-                                  ▼
-                         Query Embedding
-                                  │
-                                  ▼
-                         Hybrid Retrieval
-                         ┌────────┴────────┐
-                         ▼                 ▼
-                  Semantic Search     Keyword Search
-                         │                 │
-                         └────────┬────────┘
-                                  ▼
-                          Result Combination
-                                  │
-                                  ▼
-                         Similarity Ranking
-                                  │
-                                  ▼
-                         Metadata Filtering
-                                  │
-                                  ▼
-                         Top-K Relevant Chunks
-                                  │
-                                  ▼
-                           Context Builder
-                                  │
-                                  ▼
-                           Prompt Builder
-                                  │
-                                  ▼
-                                LLM
-                                  │
-                                  ▼
-                           Final Answer
-                                  │
-                                  ▼
-                         Sources / Citations
-
-1. Document Ingestion
-
-The ingestion pipeline converts uploaded documents into searchable vector representations.
-
+1) Document Ingestion
 PDF
  ↓
 Text Extraction
@@ -230,1185 +157,383 @@ Chunking
  ↓
 Embedding Generation
  ↓
-Vector Storage
+PostgreSQL + pgvector
 
-PDF Upload
+PDF Extraction
+PDF text is extracted while preserving page information.
 
-Users can upload PDF documents through the backend API.
-
-The system receives the document and starts the ingestion pipeline.
-
-Text Extraction
-
-Text is extracted from the PDF while preserving page-level information.
-
-This allows retrieved chunks to retain their original page references, which can later be used for source attribution.
+This is important because retrieved content can later be connected back to its original page for source attribution.
 
 Text Cleaning
+Extraction artifacts and unnecessary formatting are normalized before chunking.
 
-Extracted text is cleaned and normalized before being divided into chunks.
+Configurable Chunking
+The system supports multiple chunking strategies:
 
-The cleaning stage handles unnecessary whitespace, formatting artifacts, and other extraction-related noise.
+Fixed-size sliding window
 
-Document Chunking
+Sentence-aware chunking
 
-Large documents are divided into smaller chunks before embedding.
+Semantic chunking
 
-Chunking is important because:
+The purpose is to experiment with how chunk boundaries affect retrieval quality.
 
-LLMs have limited context windows.
-
-Smaller sections provide more precise retrieval.
-
-Embeddings represent focused pieces of information.
-
-Retrieved context can be selectively constructed.
-
-The chunking implementation is configurable so different chunk sizes and overlap strategies can be evaluated.
-
-Embedding Generation
-
-Each document chunk is converted into a numerical vector using a Sentence Transformer embedding model.
+Embeddings
+Each chunk is converted into a vector using a Sentence Transformer model.
 
 Document Chunk
       ↓
-Embedding Model
+Sentence Transformer
       ↓
-Vector Representation
+384-dimensional embedding
 
+These embeddings allow semantically related content to be retrieved even when the exact wording differs.
 
-The resulting vectors represent the semantic meaning of the chunks and allow questions to be compared against document content.
+2) Vector Storage
+Document chunks and embeddings are stored in:
 
-Vector Storage
+PostgreSQL + pgvector
 
-Document chunks, metadata, and embeddings are stored in PostgreSQL with pgvector.
-
-Stored information includes concepts such as:
-
-Document information
+Stored information includes:
 
 User ownership
 
+Knowledge base
+
+Document metadata
+
+Page number
+
 Chunk content
 
-Page information
+Embedding vector
 
-Embedding vectors
+The vector database allows semantic similarity search directly inside PostgreSQL.
 
-Metadata
-
-2. Query Processing
-
-When a user asks a question, the question goes through a similar embedding process.
-
-User Question
-      ↓
+Question
+   ↓
 Query Embedding
-      ↓
-Vector Representation
+   ↓
+pgvector
+   ↓
+Cosine Similarity
+   ↓
+Relevant Chunks
 
+3) Hybrid Retrieval
+One of the major engineering improvements in the project was moving beyond pure vector search.
 
-The query vector is then used to search the document collection for semantically relevant content.
-
-3. Retrieval
-
-The retrieval layer identifies the document chunks that are most relevant to the user's question.
+Initial Approach: Vector Search
+The original retrieval system used cosine similarity between the query embedding and stored document embeddings.
 
 Query
  ↓
-Query Embedding
+Embedding
  ↓
-Search
+pgvector
  ↓
-Filtering
+Cosine Similarity
  ↓
-Ranking
- ↓
-Top-K Results
+Top-K
 
+This worked well for conceptual questions but exposed a weakness:
 
-The system supports retrieval using semantic similarity and keyword-oriented search techniques.
+semantic search is not always good at exact facts.
 
-Semantic Retrieval
+Examples include:
 
-Semantic retrieval compares the query embedding with stored document embeddings.
+Names
 
-This allows the system to retrieve conceptually related content even when the exact words used in the question do not appear in the document.
+Numbers
 
-Query Vector
-      ↓
-Vector Similarity
-      ↓
-Relevant Chunks
+Identifiers
 
-Hybrid Retrieval
+Technical terms
 
-The retrieval system can combine semantic and keyword-based search.
+Short factual statements
 
-                 User Query
-                     │
-            ┌────────┴────────┐
-            ▼                 ▼
-     Semantic Search     Keyword Search
-            │                 │
-            └────────┬────────┘
-                     ▼
-              Combined Results
-                     │
-                     ▼
-                  Ranking
+## Evaluation-Driven Retrieval Optimization
+Instead of changing retrieval based on intuition, a fixed evaluation set of 10 real questions was created.
 
+Each question had verified expected terms from the source documents.
 
-Hybrid retrieval helps balance semantic understanding with exact keyword matching.
+The evaluation measured whether expected information appeared in the Top-5 retrieved chunks.
 
-This is particularly useful for technical terms, names, identifiers, and domain-specific terminology.
+Baseline
+Vector-only retrieval
+
+Average Recall@5 = 0.73
+
+Several failures were identified, including:
+
+Q6 → Plant Watering System
+Recall = 0.33
+
+Q8 → Internship Supervisor
+Recall = 0.00
+
+Q9 → Total Internship Hours
+Recall = 0.00
+
+This provided a measurable baseline before optimization.
+
+---->>> Keyword + Vector Retrieval
+To address exact-match failures, PostgreSQL Full-Text Search was added.
+
+A generated tsvector column and GIN index were used for efficient keyword retrieval.
+
+Query
+ │
+ ├───────────────┐
+ ▼               ▼
+Vector Search   Full-Text Search
+ │               │
+ │               │
+ └───────┬───────┘
+         ▼
+      RRF Merge
+         ▼
+      Top-K
+
+The keyword search complements semantic retrieval by directly matching important terms.
+
+--->>  Reciprocal Rank Fusion
+The two ranked result lists are combined using Reciprocal Rank Fusion (RRF).
+
+Conceptually:
+
+RRF score = Σ 1 / (k + rank)
+
+A chunk that appears highly in both retrieval systems receives a stronger combined score.
+
+This avoids directly comparing incompatible score scales such as:
+
+cosine distance
+
+PostgreSQL text-ranking score
+
+Instead, the system combines the rank positions.
+
+## Retrieval Results
+The exact same evaluation set was run before and after the retrieval change.
+
+Metric	Vector Search	Hybrid Search
+Average Recall@5	0.73	0.83
+Q8: Internship Supervisor	0.00	1.00
+Q6: Plant Watering	0.33	0.33
+Q9: Total Hours	0.00	0.00
+
+Result
+Recall improved from 0.73 → 0.83
+
+That's approximately a 13.7% relative improvement.
+
+More importantly, Q8 went from:
+
+0.00 → 1.00
+
+showing that keyword retrieval recovered an exact factual lookup that semantic retrieval had missed.
+
+##  Failure Analysis
+The evaluation also exposed problems that retrieval alone could not solve.
+
+Q6 — Plant Watering System
+The relevant information was located inside a large table/logbook chunk.
+
+Because many unrelated rows were stored together:
+
+The embedding became less focused.
+
+Keyword relevance was diluted.
+
+Important terms were harder to retrieve.
+
+Root cause
+Chunking strategy was not table-aware.
+
+Q9 — Internship Hours
+Investigation of the raw database content revealed a PDF extraction problem.
+
+The source text contained:
+
+Tot al Hours
+
+instead of:
+
+Total Hours
+
+Therefore, even keyword search could not reliably match the expected phrase.
+
+Root cause
+PDF table extraction corrupted the source text.
+
+This was documented rather than artificially hidden from the evaluation.
+
+It demonstrates an important RAG engineering lesson:
+
+Retrieval quality depends not only on the search algorithm, but also on the quality and structure of the indexed data.
+
+## Other Retrieval Experiments
+The project also evaluated several additional techniques.
+
+Query Rewriting
+A local Ollama model was used to rewrite vague queries before retrieval.
+
+The experiment showed that:
+
+Unconstrained rewriting could hallucinate unrelated context.
+
+Additional domain instructions reduced hallucination.
+
+Rewriting still produced no measurable retrieval improvement.
+
+Decision
+Implemented → Tested → No measurable benefit → Not deployed
+
+This is an intentional engineering decision rather than assuming every RAG technique improves performance.
 
 Metadata Filtering
-
-Retrieval can be restricted using metadata such as:
+Metadata filtering is implemented for:
 
 User
 
 Document
 
-Other document-level attributes
-
-This prevents users from retrieving content belonging to documents they should not have access to.
-
-Top-K Retrieval
-
-Instead of sending an entire document to the LLM, the system selects the most relevant chunks.
-
-All Document Chunks
-        ↓
-    Retrieval
-        ↓
-   Ranking
-        ↓
-   Top-K Chunks
-
-
-The value of K can be configured and evaluated to understand the trade-off between retrieval quality, context size, and latency.
-
-4. Context Construction
-
-After retrieval, the selected chunks are transformed into a structured context for the LLM.
-
-Top-K Retrieved Chunks
-          ↓
-    Context Builder
-          ↓
-   Structured Context
-
-
-The context builder combines the relevant information while preserving useful metadata such as document and page references.
-
-The goal is to provide the LLM with the smallest useful set of relevant information rather than the entire document.
-
-5. Prompt Construction
-
-The retrieved context and the user's question are combined into an LLM prompt.
-
-Retrieved Context
-       +
-User Question
-       ↓
-Prompt Builder
-       ↓
-LLM Messages
-
-
-The prompt builder defines the instructions that guide the model to answer using the retrieved information.
-
-This helps reduce hallucinations by grounding the generated response in the retrieved document content.
-
-6. Answer Generation
-
-The constructed prompt is sent to the configured LLM.
-
-Question
-   +
-Retrieved Context
-   ↓
-Prompt
-   ↓
-LLM
-   ↓
-Generated Answer
-
-
-The application supports streaming responses so that generated tokens can be returned progressively rather than waiting for the complete answer.
-
-7. Source Grounding & Citations
-
-The RAG pipeline maintains the relationship between retrieved chunks and their original documents.
-
-Answer
-  │
-  ├── Source Document
-  ├── Page Number
-  └── Retrieved Chunk
-
-
-This provides traceability between the generated answer and the information retrieved from the knowledge base.
-
-8. RAG Design Principles
-
-The implementation focuses on understanding each component of RAG rather than treating RAG as a single black-box operation.
-
-Key principles include:
-
-Retrieve before generating
-
-Use focused chunks instead of entire documents
-
-Ground LLM responses in retrieved context
-
-Preserve document metadata
-
-Filter results by ownership and document
-
-Keep retrieval and generation as separate components
-
-Make retrieval parameters configurable
-
-Evaluate retrieval independently from generation
-
-9. Retrieval Experiments
-
-The retrieval system is designed to allow experimentation with different configurations.
-
-Experiments can include:
-
-Parameter	Examples
-Chunk size	Small vs. large chunks
-Chunk overlap	Different overlap percentages
-Embedding model	Different embedding models
-Top-K	Different numbers of retrieved chunks
-Retrieval method	Semantic / keyword / hybrid
-Metadata filters	User / document filtering
-Ranking	Different ranking strategies
-
-These experiments help analyze the relationship between retrieval quality, latency, and context size.
-
-10. RAG Testing
-
-The RAG implementation is tested at multiple levels.
-
-Unit Tests
-
-Individual components are tested independently, including:
-
-Text cleaning
-
-PDF extraction
-
-Chunking
-
-Embedding generation
-
-Prompt construction
-
-LLM streaming
-
-Retrieval services
-
-Search functionality
-
-Agent components
-
-Integration Tests
-
-Integration tests verify that multiple components work together.
-
-Examples include:
-
-RetrievalService
-      ↓
-Search
-      ↓
-Embedding Model
-      ↓
-PostgreSQL
-      ↓
-pgvector
-      ↓
-Retrieved Results
-
-
-The project also tests the RAG context construction and LLM integration.
-
-API Tests
-
-The FastAPI health endpoint and backend API behavior are tested separately.
-
-RAG Implementation Philosophy
-
-The primary goal of this project is not simply to use RAG, but to understand how a RAG system works internally.
-
-The implementation therefore avoids hiding the core retrieval process behind high-level AI orchestration frameworks.
-
-The system is built around independently testable components for:
-
-Ingestion
-   ↓
-Chunking
-   ↓
-Embeddings
-   ↓
-Storage
-   ↓
-Retrieval
-   ↓
-Ranking
-   ↓
-Context Construction
-   ↓
-Prompt Construction
-   ↓
-LLM Generation
-
-
-
-
-## AI Agents
-
-AI Agents
-
-The platform includes a custom multi-agent research workflow designed to demonstrate planning, task decomposition, retrieval, research, review, and reflection without relying on high-level agent orchestration frameworks such as LangGraph.
-
-Agent Architecture
-                         User Query
-                              │
-                              ▼
-                        Planner Agent
-                              │
-                    ┌─────────┴─────────┐
-                    ▼                   ▼
-             Research Task 1     Research Task 2
-                    │                   │
-                    ▼                   ▼
-              Researcher Agent    Researcher Agent
-                    │                   │
-                    └─────────┬─────────┘
-                              ▼
-                       Retrieved Results
-                              │
-                              ▼
-                         Writer Agent
-                              │
-                              ▼
-                        Reviewer Agent
-                              │
-                       ┌──────┴──────┐
-                       │             │
-                    Approved      Needs Review
-                       │             │
-                       ▼             ▼
-                  Final Answer   Reflection Loop
-                                     │
-                                     ▼
+Knowledge base
+
+This provides both retrieval precision and access isolation.
+
+The mechanism has been tested, while broader retrieval evaluation is planned once the system contains multiple documents and knowledge bases.
+
+Cross-Encoder Reranking
+Cross-encoder reranking was considered as a second-stage retrieval optimization.
+
+It was not added because:
+
+Hybrid retrieval already produced a measurable improvement.
+
+It adds additional inference cost and complexity.
+
+Current project constraints favor a lightweight local architecture.
+
+
+## Multi-Agent Research System
+The platform extends beyond standard question-answering with a custom multi-agent workflow.
+
+                     User Question
+                           │
+                           ▼
+                       Planner
+                           │
+                  Task Decomposition
+                           │
+             ┌─────────────┴─────────────┐
+             ▼                           ▼
+        Research Task 1             Research Task 2
+             │                           │
+             ▼                           ▼
+        Researcher                  Researcher
+             │                           │
+             └─────────────┬─────────────┘
+                           ▼
+                     Research Results
+                           │
+                           ▼
+                         Writer
+                           │
+                           ▼
+                       Reviewer
+                           │
+                  ┌────────┴────────┐
+                  ▼                 ▼
+               Accept             Reject
+                  │                 │
+                  ▼                 ▼
+             Final Answer       Reflection
+                                    │
+                                    ▼
                                   Revision
-                                     │
-                                     └──────→ Reviewer
+                                    │
+                                    └──────► Reviewer
 
-Agent Workflow
+1) Planner Agent
 
-The system follows a structured workflow:
+Breaks a complex question into smaller research tasks.
 
-User Question
-      ↓
-Planner
-      ↓
-Task Decomposition
-      ↓
-Research
-      ↓
-Retrieval
-      ↓
-Research Results
-      ↓
-Writer
-      ↓
-Reviewer
-      ↓
-Reflection / Revision
-      ↓
-Final Answer
+Responsibilities:
 
-Planner Agent
+Understand the objective
 
-The Planner Agent converts a complex user request into a structured research plan.
+Decompose the problem
 
-Responsibilities include:
+Generate structured tasks
 
-Understanding the user's objective
+Validate the generated plan
 
-Breaking complex questions into smaller tasks
+Handle invalid LLM output
 
-Generating research tasks
-
-Validating the generated plan
-
-Providing fallback behavior when the LLM returns invalid output
-
-Example:
-
-Complex Question
-      ↓
-Planner Agent
-      ↓
-┌─────────────────────┐
-│ Task 1: Research A  │
-│ Task 2: Research B  │
-│ Task 3: Compare     │
-└─────────────────────┘
-
-Researcher Agent
-
-The Researcher Agent executes the research tasks generated by the planner.
-
-It coordinates retrieval and LLM-based reasoning to produce research results that can later be consumed by the writer.
+2) Researcher Agent
+Executes research tasks using the same retrieval infrastructure as the RAG pipeline.
 
 Research Task
-     ↓
+      ↓
 Retriever
-     ↓
-Relevant Information
-     ↓
-LLM Research
-     ↓
+      ↓
+Relevant Chunks
+      ↓
+Local LLM
+      ↓
 Research Result
 
+This prevents the agent system from maintaining a completely separate knowledge retrieval system.
 
-The agent also handles cases where a plan or retriever is unavailable and maintains the current workflow state.
+3) Writer Agent
+Combines research results into a coherent response.
 
-Retriever
+The writer does not independently search the database; it operates on structured research context.
 
-The agent workflow connects to the custom retrieval system rather than implementing a separate knowledge-retrieval mechanism.
-
-Agent
-  ↓
-Retrieval Service
-  ↓
-Hybrid Search
-  ↓
-Relevant Chunks
-  ↓
-Agent Context
-
-
-This allows the agent system to use the same document knowledge base as the standard RAG pipeline.
-
-Writer Agent
-
-The Writer Agent transforms the collected research results into a coherent response.
-
-Research Results
-      ↓
-Writer Agent
-      ↓
-Structured Response
-
-
-The writer receives the relevant research context instead of independently searching the knowledge base.
-
-Reviewer Agent
-
-The Reviewer evaluates the generated response before it is returned to the user.
-
-The review stage is intended to identify problems such as:
+4) Reviewer Agent
+Reviews generated responses for:
 
 Missing information
 
 Unsupported claims
 
-Poor reasoning
+Inconsistency
 
-Incomplete answers
+Incomplete reasoning
 
-Inconsistencies with retrieved information
+Poor answer quality
 
-Generated Answer
-      ↓
-Reviewer
-      ↓
-┌───────────────┐
-│   Accept      │
-│      OR       │
-│ Request Review│
-└───────────────┘
+5) Reflection Loop
+If the reviewer rejects the answer:
 
-Reflection Loop
-
-When the reviewer identifies issues, the workflow can enter a reflection/revision cycle.
-
-Draft Answer
-     ↓
-Reviewer
-     ↓
-Issues Identified
-     ↓
-Reflection
-     ↓
-Revision
-     ↓
-Reviewer
-     ↓
-Final Answer
-
-
-The purpose of the reflection loop is to improve answer quality through iterative evaluation rather than generating the final response in a single LLM call.
-
-Agent State
-
-The workflow maintains shared state between agents.
-
-The state can contain information such as:
-
-User question
-
-Research plan
-
-Research tasks
-
-Retrieved information
-
-Research results
-
-Draft response
-
-Review feedback
-
-Final response
-
-This allows individual agents to perform focused responsibilities while participating in a single workflow.
-
-Agent Design Principles
-
-The agent architecture follows several principles:
-
-Single responsibility — each agent performs a specific task.
-
-Task decomposition — complex questions are divided into smaller research tasks.
-
-Shared state — agents communicate through structured workflow state.
-
-Tool usage — agents can use retrieval and external tools when required.
-
-Validation — agent outputs are validated before continuing the workflow.
-
-Fallback handling — invalid LLM outputs do not automatically terminate the workflow.
-
-Iterative improvement — reviewer feedback can trigger reflection and revision.
-
-Separation of concerns — planning, retrieval, research, writing, and reviewing are separate components.
-
-Agent Testing
-
-The agent components are tested independently.
-
-Current unit tests cover:
-
-Planner plan generation
-
-Research task creation
-
-LLM invocation
-
-Invalid JSON fallback
-
-Invalid task-count fallback
-
-Researcher behavior without a plan
-
-Researcher behavior without a retriever
-
-Retriever invocation
-
-LLM research invocation
-
-Research result creation
-
-This makes individual agent behavior testable without requiring the entire multi-agent workflow to run for every test.
-
-Why Build Agents From Scratch?
-
-Instead of using a framework to hide the orchestration logic, this project implements the agent workflow explicitly.
-
-The goal is to understand:
-
-Planning
-   ↓
-Task Decomposition
-   ↓
-Tool / Retrieval Usage
-   ↓
-State Management
-   ↓
-Generation
-   ↓
+Draft
+ ↓
 Review
-   ↓
+ ↓
+Issues
+ ↓
 Reflection
-   ↓
+ ↓
 Revision
-
-
-This provides a deeper understanding of how multi-agent AI systems can be designed and orchestrated internally.
-
-## MCP Integration
-
-AI Agents
-
-The platform includes a custom multi-agent research workflow designed to demonstrate planning, task decomposition, retrieval, research, review, and reflection without relying on high-level agent orchestration frameworks such as LangGraph.
-
-Agent Architecture
-                         User Query
-                              │
-                              ▼
-                        Planner Agent
-                              │
-                    ┌─────────┴─────────┐
-                    ▼                   ▼
-             Research Task 1     Research Task 2
-                    │                   │
-                    ▼                   ▼
-              Researcher Agent    Researcher Agent
-                    │                   │
-                    └─────────┬─────────┘
-                              ▼
-                       Retrieved Results
-                              │
-                              ▼
-                         Writer Agent
-                              │
-                              ▼
-                        Reviewer Agent
-                              │
-                       ┌──────┴──────┐
-                       │             │
-                    Approved      Needs Review
-                       │             │
-                       ▼             ▼
-                  Final Answer   Reflection Loop
-                                     │
-                                     ▼
-                                  Revision
-                                     │
-                                     └──────→ Reviewer
-
-Agent Workflow
-
-The system follows a structured workflow:
-
-User Question
-      ↓
-Planner
-      ↓
-Task Decomposition
-      ↓
-Research
-      ↓
-Retrieval
-      ↓
-Research Results
-      ↓
-Writer
-      ↓
-Reviewer
-      ↓
-Reflection / Revision
-      ↓
-Final Answer
-
-Planner Agent
-
-The Planner Agent converts a complex user request into a structured research plan.
-
-Responsibilities include:
-
-Understanding the user's objective
-
-Breaking complex questions into smaller tasks
-
-Generating research tasks
-
-Validating the generated plan
-
-Providing fallback behavior when the LLM returns invalid output
-
-Example:
-
-Complex Question
-      ↓
-Planner Agent
-      ↓
-┌─────────────────────┐
-│ Task 1: Research A  │
-│ Task 2: Research B  │
-│ Task 3: Compare     │
-└─────────────────────┘
-
-Researcher Agent
-
-The Researcher Agent executes the research tasks generated by the planner.
-
-It coordinates retrieval and LLM-based reasoning to produce research results that can later be consumed by the writer.
-
-Research Task
-     ↓
-Retriever
-     ↓
-Relevant Information
-     ↓
-LLM Research
-     ↓
-Research Result
-
-
-The agent also handles cases where a plan or retriever is unavailable and maintains the current workflow state.
-
-Retriever
-
-The agent workflow connects to the custom retrieval system rather than implementing a separate knowledge-retrieval mechanism.
-
-Agent
-  ↓
-Retrieval Service
-  ↓
-Hybrid Search
-  ↓
-Relevant Chunks
-  ↓
-Agent Context
-
-
-This allows the agent system to use the same document knowledge base as the standard RAG pipeline.
-
-Writer Agent
-
-The Writer Agent transforms the collected research results into a coherent response.
-
-Research Results
-      ↓
-Writer Agent
-      ↓
-Structured Response
-
-
-The writer receives the relevant research context instead of independently searching the knowledge base.
-
-Reviewer Agent
-
-The Reviewer evaluates the generated response before it is returned to the user.
-
-The review stage is intended to identify problems such as:
-
-Missing information
-
-Unsupported claims
-
-Poor reasoning
-
-Incomplete answers
-
-Inconsistencies with retrieved information
-
-Generated Answer
-      ↓
-Reviewer
-      ↓
-┌───────────────┐
-│   Accept      │
-│      OR       │
-│ Request Review│
-└───────────────┘
-
-Reflection Loop
-
-When the reviewer identifies issues, the workflow can enter a reflection/revision cycle.
-
-Draft Answer
-     ↓
-Reviewer
-     ↓
-Issues Identified
-     ↓
-Reflection
-     ↓
-Revision
-     ↓
-Reviewer
-     ↓
-Final Answer
-
-
-The purpose of the reflection loop is to improve answer quality through iterative evaluation rather than generating the final response in a single LLM call.
-
-Agent State
-
-The workflow maintains shared state between agents.
-
-The state can contain information such as:
-
-User question
-
-Research plan
-
-Research tasks
-
-Retrieved information
-
-Research results
-
-Draft response
-
-Review feedback
-
-Final response
-
-This allows individual agents to perform focused responsibilities while participating in a single workflow.
-
-Agent Design Principles
-
-The agent architecture follows several principles:
-
-Single responsibility — each agent performs a specific task.
-
-Task decomposition — complex questions are divided into smaller research tasks.
-
-Shared state — agents communicate through structured workflow state.
-
-Tool usage — agents can use retrieval and external tools when required.
-
-Validation — agent outputs are validated before continuing the workflow.
-
-Fallback handling — invalid LLM outputs do not automatically terminate the workflow.
-
-Iterative improvement — reviewer feedback can trigger reflection and revision.
-
-Separation of concerns — planning, retrieval, research, writing, and reviewing are separate components.
-
-Agent Testing
-
-The agent components are tested independently.
-
-Current unit tests cover:
-
-Planner plan generation
-
-Research task creation
-
-LLM invocation
-
-Invalid JSON fallback
-
-Invalid task-count fallback
-
-Researcher behavior without a plan
-
-Researcher behavior without a retriever
-
-Retriever invocation
-
-LLM research invocation
-
-Research result creation
-
-This makes individual agent behavior testable without requiring the entire multi-agent workflow to run for every test.
-
-Why Build Agents From Scratch?
-
-Instead of using a framework to hide the orchestration logic, this project implements the agent workflow explicitly.
-
-The goal is to understand:
-
-Planning
-   ↓
-Task Decomposition
-   ↓
-Tool / Retrieval Usage
-   ↓
-State Management
-   ↓
-Generation
-   ↓
-Review
-   ↓
-Reflection
-   ↓
-Revision
-
-
-This provides a deeper understanding of how multi-agent AI systems can be designed and orchestrated internally.
-
-## Authentication
-
-Authentication
-The backend implements JWT-based authentication to support multiple users and protect user-specific resources.
-
-User registration and login
-
-Password hashing
-
-JWT access tokens
-
-Protected API endpoints
-
-User-specific document and knowledge-base access
-
-Authorization checks for owned resources
-
-
-## Tech Stack
-
-Backend
-Python
-
-FastAPI
-
-SQLAlchemy
-
-Alembic
-
-Pydantic
-
-PostgreSQL
-
-pgvector
-
-AI / ML
-OpenAI API / Ollama
-
-Sentence Transformers
-
-Embeddings
-
-Retrieval-Augmented Generation (RAG)
-
-Hybrid search
-
-AI agents
-
-Model Context Protocol (MCP)
-
-Frontend
-Next.js
-
-React
-
-TypeScript
-
-Testing & Development
-Pytest
-
-Async testing
-
-Git / GitHub
-
-Python virtual environment
-
-Infrastructure
-PostgreSQL + pgvector
-
-Docker configuration
-
-
-
-## API Endpoints
-API Endpoints
-
-The backend is built with FastAPI and exposes REST APIs for authentication, document ingestion, knowledge retrieval, RAG-based question answering, and system health monitoring.
-
-Base URL
-http://localhost:8000
-
-
-Interactive API documentation:
-
-http://localhost:8000/docs
-
-
-ReDoc documentation:
-
-http://localhost:8000/redoc
-
-Health & System
-Method	Endpoint	Description
-GET	/health	Check whether the API is running
-Authentication
-Method	Endpoint	Description
-POST	/auth/register	Register a new user
-POST	/auth/login	Authenticate a user and obtain a JWT token
-
-Authentication uses JWT access tokens to protect user-specific resources.
-
-Example:
-
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "your_password"
-}
-
-
-Authenticated requests use:
-
-Authorization: Bearer <access_token>
-
-Document Management
-Method	Endpoint	Description
-POST	/documents/upload	Upload and ingest a document
-GET	/documents	List available documents
-GET	/documents/{document_id}	Retrieve document information
-DELETE	/documents/{document_id}	Delete a document
-
-The document upload pipeline performs:
-
-Upload
-  ↓
-PDF Text Extraction
-  ↓
-Text Cleaning
-  ↓
-Text Normalization
-  ↓
-Chunking
-  ↓
-Embedding Generation
-  ↓
-Metadata Storage
-  ↓
-Vector Storage
-
-Retrieval & Search
-Method	Endpoint	Description
-POST	/search	Search the knowledge base
-POST	/retrieval/search	Perform semantic/hybrid retrieval
-
-The retrieval system supports:
-
-Query embedding
-
-Vector similarity search
-
-Top-k retrieval
-
-User filtering
-
-Document filtering
-
-Metadata filtering
-
-Hybrid retrieval
-
-Context construction
-
-RAG / Question Answering
-Method	Endpoint	Description
-POST	/chat	Ask a question using the RAG pipeline
-POST	/chat/stream	Ask a question and receive a streamed response
-
-The RAG pipeline follows:
-
-User Question
-      ↓
-Query Embedding
-      ↓
-Vector / Hybrid Search
-      ↓
-Similarity Ranking
-      ↓
-Top-k Relevant Chunks
-      ↓
-Context Builder
-      ↓
-Prompt Builder
-      ↓
-LLM
-      ↓
-Generated Answer
-      ↓
-Citations / Sources
-
-Streaming Responses
-
-The streaming endpoint returns the generated answer incrementally instead of waiting for the complete response.
-
-Client
-  ↓
-POST /chat/stream
-  ↓
-RAG Retrieval
-  ↓
-LLM
-  ↓
-Token-by-token Streaming
-  ↓
-Client
-
-
-This improves the perceived response time for longer AI-generated answers.
-
-Knowledge Base
-Method	Endpoint	Description
-POST	/knowledge-bases	Create a knowledge base
-GET	/knowledge-bases	List knowledge bases
-GET	/knowledge-bases/{knowledge_base_id}	Retrieve a knowledge base
-DELETE	/knowledge-bases/{knowledge_base_id}	Delete a knowledge base
-
-Knowledge bases allow documents and their embeddings to be logically grouped for retrieval.
-
-Chat History
-Method	Endpoint	Description
-GET	/chat/history	Retrieve previous conversations
-GET	/chat/history/{conversation_id}	Retrieve a specific conversation
-DELETE	/chat/history/{conversation_id}	Delete a conversation
-Agent APIs
-
-The agent system provides an orchestration layer for research-oriented tasks.
-
-The workflow is:
-
-Planner
-   ↓
-Retriever
-   ↓
-Researcher
-   ↓
-Writer
-   ↓
-Reviewer
-   ↓
-Reflection
-   ↓
-Final Answer
-
-
-Agent components include:
-
-Planning
-
-Task decomposition
-
-Retrieval
-
-Research
-
-Answer generation
-
+ ↓
 Review
 
-Reflection
+This creates an explicit iterative generation workflow rather than a single LLM call.
 
-Memory/state management
+## Model Context Protocol
+The platform also experiments with Model Context Protocol (MCP) for connecting AI workflows with external tools.
 
-MCP Integration
-
-The project also includes Model Context Protocol (MCP) integration for connecting AI workflows with external tools and resources.
+AI Agent
+   ↓
+MCP Client
+   ↓
+MCP Server
+   ↓
+Tool / Resource
+   ↓
+External System
 
 Implemented MCP capabilities include:
 
@@ -1422,40 +547,106 @@ Database schema exploration
 
 GitHub repository interaction
 
-The MCP architecture follows:
+This demonstrates how agents can be extended beyond the internal knowledge base.
 
-AI Agent
-   ↓
-MCP Client
-   ↓
-MCP Server
-   ↓
-Tool / Resource
-   ↓
-External System
+## Local LLM Architecture
+Instead of making every generation request to a hosted LLM API, the project supports local LLM inference using Ollama.
 
-API Documentation
+Application
+     ↓
+LLM Service
+     ↓
+Ollama
+     ↓
+Local Model
+     ↓
+Streaming Tokens
+     ↓
+FastAPI
+     ↓
+Frontend
 
-FastAPI automatically generates interactive API documentation.
+Why local inference?
+No per-request API cost during development
 
-Swagger UI:
+Reduced dependency on external services
 
-http://localhost:8000/docs
+Better control over development data
 
+Ability to experiment with different local models
 
-ReDoc:
+Useful for self-hosted AI experimentation
 
-http://localhost:8000/redoc
-
-
-These interfaces can be used to explore endpoints, inspect request/response schemas, authenticate requests, and test the API locally.
+The LLM layer is isolated behind a service abstraction, allowing the underlying provider/model to be changed without redesigning the RAG pipeline.
 
 
-## Database Schema
+## Streaming Generation
+The application supports streaming responses.
 
-The project uses PostgreSQL as the primary database and pgvector for storing and searching document embeddings.
+User
+ ↓
+/chat/stream
+ ↓
+Retrieval
+ ↓
+Context Construction
+ ↓
+Ollama
+ ↓
+Token Stream
+ ↓
+Frontend
 
-The main data flow is:
+Instead of waiting for the entire answer to be generated, tokens are returned progressively to the client.
+
+## Source Grounding
+The system preserves the relationship between retrieved chunks and their original documents.
+
+Generated Answer
+      │
+      ├── Document
+      ├── Page
+      └── Retrieved Chunk
+
+This allows generated answers to be connected back to source material and reduces the risk of unsupported responses.
+
+## Authentication & Authorization
+The backend supports multi-user access using JWT authentication.
+
+Features include:
+
+User registration
+
+Login
+
+Password hashing
+
+JWT access tokens
+
+Protected endpoints
+
+User-specific document access
+
+Knowledge-base ownership
+
+Document-level filtering
+
+Retrieval is therefore not simply:
+
+Query → Search Everything
+
+but instead:
+
+User
+ ↓
+Authorized Knowledge Base
+ ↓
+Metadata Filtering
+ ↓
+Retrieval
+
+## Database Design
+The main entities are:
 
 User
  │
@@ -1463,265 +654,256 @@ User
  │       │
  │       └── Documents
  │              │
- │              └── Document Chunks
- │                     │
- │                     └── Embeddings
+ │              └── Chunks
+ │                    │
+ │                    └── Embeddings
  │
- └── Chat / Conversation History
+ └── Conversations
 
-Core Entities
-Users — Stores user accounts and authentication information.
+PostgreSQL
+Used for:
 
-Knowledge Bases — Groups documents into separate searchable collections.
+Application data
 
-Documents — Stores uploaded document information and metadata.
+Users
 
-Document Chunks — Stores the text produced by the document chunking pipeline.
+Documents
 
-Embeddings — Stores vector representations of document chunks using pgvector.
+Knowledge bases
 
-Chat History — Stores conversations and generated responses.
+Chat history
 
-Vector Search
-Document chunks are converted into numerical embeddings during ingestion.
+Metadata
 
-Document
-   ↓
-Text Extraction
-   ↓
-Chunking
-   ↓
-Embedding Model
-   ↓
-Vector Embedding
-   ↓
-PostgreSQL + pgvector
+pgvector
+Used for:
 
-During retrieval, the user's question is also converted into an embedding and compared against stored document vectors.
+Embedding storage
 
-Question
-   ↓
-Query Embedding
-   ↓
-pgvector Similarity Search
-   ↓
-Relevant Chunks
-   ↓
-RAG Context
+Cosine similarity search
 
-pgvector enables semantic similarity search directly inside PostgreSQL.
+Semantic retrieval
 
-Database Migrations
-Database schema changes are managed using Alembic.
+PostgreSQL Full-Text Search
+Used for:
 
-Run migrations with:
+Keyword retrieval
 
-alembic upgrade head
+Exact term matching
 
-Create a new migration when the database models change:
+Hybrid search
 
-alembic revision --autogenerate -m "describe your change"
+Alembic
+Used for database migrations.
+
+## Testing Strategy
+Testing covers the AI pipeline at multiple levels.
+
+Unit Tests
+Individual components are tested independently.
+
+Component	   Tests
+Text cleaning	1
+Chunking	      2
+PDF extraction	3
+Embeddings	      3
+Prompt builder	5
+LLM service	      3
+Planner agent	5
+Researcher agent	5
+Retrieval service	3
+Vector search	4
+
+All tests shown above passed.
+
+Integration Tests
+The project tests interactions between real components.
+
+Retrieval Integration
+RetrievalService
+      ↓
+Search
+      ↓
+Sentence Transformer
+      ↓
+PostgreSQL
+      ↓
+pgvector
+      ↓
+Retrieved Results
+
+RAG Context Integration
+Hybrid Search
+      ↓
+Retrieved Chunks
+      ↓
+Context Builder
+      ↓
+LLM Context
+
+LLM Integration
+The streaming LLM path is also integration-tested using the local Ollama setup.
+
+API Tests
+FastAPI endpoints are tested independently.
+
+Current API coverage includes the application health endpoint.
+
+python -m pytest app/test/api/test_health.py -v
+
+## Test Results
+The demonstrated test runs include:
+
+Unit tests: cleaning, chunking, extraction, embeddings, prompting, LLM, agents, retrieval
+
+Integration tests: retrieval, RAG context, LLM
+
+API tests: health endpoint
+
+Every test execution shown during development completed successfully.
+
+Run the complete suite with:
+
+python -m pytest -v
+
 
 
 ## Running Locally
-Prerequisites
-Before running the project locally, install:
-
+Requirements
 Python 3.12+
 
 PostgreSQL
 
-pgvector extension
+pgvector
+
+Node.js + npm
+
+Ollama for local LLM inference
 
 Git
 
-Node.js and npm for the frontend
-
-Ollama if using local LLMs
-
-1. Clone the Repository
+Backend
 git clone https://github.com/Rishika70592/AI_knowledge_platform.git
 cd AI_knowledge_platform
 
-2. Create a Python Virtual Environment
-Windows PowerShell:
-
 python -m venv venv
-
-Activate the environment:
-
 .\venv\Scripts\Activate.ps1
 
-3. Install Backend Dependencies
 pip install -r app/requirements.txt
 
-4. Configure Environment Variables
-Create a .env file and configure the required database and AI provider settings.
-
-Example:
+Configure environment variables:
 
 DATABASE_URL=postgresql://username:password@localhost:5432/ai_knowledge_platform
-OPENAI_API_KEY=your_api_key
 SECRET_KEY=your_secret_key
 OLLAMA_BASE_URL=http://localhost:11434
 
-5. Start PostgreSQL
-Make sure PostgreSQL is running and the required database exists.
-
-The database should also have the pgvector extension enabled.
-
-6. Run Database Migrations
-From the project root:
+Run migrations:
 
 alembic upgrade head
 
-7. Start the Backend
+Start the backend:
+
 uvicorn app.main:app --reload
 
-The FastAPI backend will be available at:
+Backend:
 
 http://localhost:8000
 
-Interactive API documentation:
+Swagger:
 
 http://localhost:8000/docs
 
-ReDoc:
-
-http://localhost:8000/redoc
-
-8. Start the Frontend
-Open another terminal:
-
+Frontend
 cd frontend
 npm install
 npm run dev
 
-The frontend will normally be available at:
+Frontend:
 
 http://localhost:3000
 
-9. Run Tests
-Run the complete test suite:
-
+Tests
 python -m pytest -v
 
-Run unit tests:
-
-python -m pytest app/test/unit -v
-
-Run integration tests:
-
-python -m pytest app/test/integration -v
-
-Run API tests:
-
-python -m pytest app/test/api -v
-
-10. Local Development Flow
-Once the services are running:
-
-Next.js Frontend
-       │
-       ▼
-FastAPI Backend
-       │
-       ├── Authentication
-       │
-       ├── Document Ingestion
-       │
-       ├── RAG Pipeline
-       │
-       ├── AI Agents
-       │
-       └── MCP Integration
-              │
-              ▼
-       PostgreSQL + pgvector
-              │
-              ▼
-       AI / Embedding Models
-
-The project is currently designed primarily as a local learning and experimentation environment for understanding LLM applications, RAG, retrieval systems, AI agents, MCP, and backend engineering.
-
-## Testing
-Testing
-
-The project includes unit, integration, and API tests covering the core AI pipeline.
-
-Test Coverage
-Area	Tests	Status
-Text Cleaning	1	✅ Passed
-Text Chunking	2	✅ Passed
-PDF Text Extraction	3	✅ Passed
-Embeddings	3	✅ Passed
-Prompt Builder	5	✅ Passed
-LLM Service	3	✅ Passed
-Planner Agent	5	✅ Passed
-Researcher Agent	5	✅ Passed
-Retrieval Service	3	✅ Passed
-Vector Search	4	✅ Passed
-Retrieval Integration	1	✅ Passed
-RAG Context Integration	1	✅ Passed
-LLM Integration	1	✅ Passed
-Health API	1	✅ Passed
-Testing Strategy
-
-Unit Tests
-
-Core components are tested independently, including:
-
-Text cleaning
-
-PDF text extraction
-
-Document chunking
-
-Embedding generation
-
-Prompt construction
-
-LLM streaming
-
-Vector search
-
-Retrieval service
-
-Agent planning
-
-Agent research
-
-Integration Tests
-
-Integration tests verify that multiple components work together:
-
-RetrievalService
-      ↓
-Search Service
-      ↓
-SentenceTransformer
-      ↓
-PostgreSQL
-      ↓
-pgvector similarity search
-      ↓
-Retrieved Results
 
 
-The RAG context pipeline is also tested to verify that retrieved documents are correctly transformed into context for the LLM.
+## Engineering Decisions & Lessons
+This project is intentionally built around measurement and experimentation.
 
-API Tests
+1. Don't assume semantic search solves everything
+Vector search is excellent for semantic similarity but can miss exact facts.
 
-The FastAPI health endpoint is tested to verify that the application starts correctly and responds as expected.
+2. Retrieval methods have complementary failure modes
+Semantic and keyword retrieval solve different problems.
 
-Example Test Command
-python -m pytest app/test/unit/test_chunking.py -v
+Hybrid retrieval combines their strengths.
 
-Current Result
+3. Evaluate before optimizing
+The fixed evaluation set made it possible to measure:
 
-All tests executed during development passed successfully.
-## Screenshots / Demo
+0.73 → 0.83
+
+rather than simply claiming that retrieval "felt better."
+
+4. More complex does not automatically mean better
+Query rewriting was implemented and evaluated but deliberately not deployed because it did not improve retrieval quality with the selected local model.
+
+5. Data quality is part of AI system quality
+The remaining retrieval failures were traced to:
+
+Poor table chunking
+
+PDF extraction corruption
+
+This demonstrates that improving an AI system is not always about changing the model.
+
+6. AI components should be independently testable
+The project separates:
+
+Ingestion
+   ↓
+Chunking
+   ↓
+Embeddings
+   ↓
+Storage
+   ↓
+Retrieval
+   ↓
+Context
+   ↓
+Generation
+   ↓
+Agents
+
+This makes individual components easier to evaluate, replace, and debug.
 
 
 
+## What This Project Demonstrates
+
+The primary goal was not simply to build an application that can call an LLM.
+
+It demonstrates the ability to design and reason about an AI system across multiple layers:
+
+                 AI ENGINEERING
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+     Retrieval       Agents          LLM
+        │              │              │
+     Embeddings      Planning       Prompting
+     Vector DB       State          Streaming
+     Hybrid Search   Tools          Local Inference
+     Evaluation      Reflection
+        │              │
+        └──────────────┼──────────────┘
+                       ▼
+                 AI Application
+                       │
+                 FastAPI + Next.js
+                       │
+                 PostgreSQL
+
+The project demonstrates end-to-end AI engineering, from raw documents and retrieval infrastructure to LLM generation, multi-agent workflows, evaluation, testing, and tool integration.
 
